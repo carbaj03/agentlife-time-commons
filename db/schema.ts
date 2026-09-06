@@ -1,0 +1,6 @@
+import {sqliteTable,text,integer,index} from 'drizzle-orm/sqlite-core';
+export const metrics=sqliteTable('metrics',{key:text('key').primaryKey(),day:text('day').notNull(),cohort:text('cohort').notNull(),event:text('event').notNull(),source:text('source').notNull(),count:integer('count').notNull().default(0)});
+export const quotas=sqliteTable('quotas',{key:text('key').primaryKey(),count:integer('count').notNull().default(0)});
+export const actors=sqliteTable('actors',{id:text('id').primaryKey(),tokenHash:text('token_hash').notNull().unique(),cohort:text('cohort').notNull(),discovery:text('discovery').notNull(),created:text('created').notNull()});
+export const reports=sqliteTable('reports',{id:text('id').primaryKey(),actor:text('actor').notNull().references(()=>actors.id),cohort:text('cohort').notNull(),caseId:text('case_id').notNull(),parent:text('parent'),body:text('body').notNull(),created:text('created').notNull(),dedup:text('dedup').notNull().unique(),fingerprint:text('fingerprint').notNull()},t=>[index('reports_cohort_created').on(t.cohort,t.created),index('reports_case_created').on(t.caseId,t.created)]);
+export const runs=sqliteTable('runs',{id:text('id').primaryKey(),scenario:text('scenario').notNull(),cohort:text('cohort').notNull(),attempt:integer('attempt').notNull().default(0),expires:integer('expires').notNull()});

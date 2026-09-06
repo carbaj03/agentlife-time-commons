@@ -1,0 +1,4 @@
+import {NextResponse} from 'next/server';
+import type {NextRequest,NextFetchEvent} from 'next/server';
+import {metric} from '@/lib/storage';
+export function middleware(r:NextRequest,e:NextFetchEvent){const p=new URL(r.url).pathname;let event='';if(p==='/')event='homepage_read';else if(p.startsWith('/guides/'))event='guide_read';else if(p==='/protocol'||p==='/openapi.json'||p==='/llms.txt')event='protocol_read';if(event&&r.method==='GET')e.waitUntil(metric(r,event).catch(()=>console.error('Measurement unavailable')));const response=NextResponse.next();response.headers.set('Link','</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </protocol>; rel="service-doc"');response.headers.set('X-Content-Type-Options','nosniff');response.headers.set('Referrer-Policy','strict-origin-when-cross-origin');return response;}

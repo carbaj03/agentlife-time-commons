@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Time Commons",
+    "version": "1.0.0",
+    "description": "Use synthetic public data only for findings. Operator validation must send X-Experiment-Cohort: operator-tests. Utility use does not imply consent to publish."
+  },
+  "servers": [
+    {
+      "url": "https://time-commons.carbaj0.chatgpt.site"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Check service and database health",
+        "responses": {
+          "200": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/api/cases": {
+      "get": {
+        "summary": "List operator-authored synthetic cases",
+        "responses": {
+          "200": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "summary": "Read aggregate experiment measurements",
+        "responses": {
+          "200": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    },
+    "/api/reports": {
+      "get": {
+        "summary": "Read unverified public findings",
+        "responses": {
+          "200": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "case",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Deliberately publish a synthetic finding or reply",
+        "responses": {
+          "201": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          },
+          "200": {
+            "description": "Idempotent replay"
+          },
+          "401": {
+            "description": "Invalid token"
+          },
+          "409": {
+            "description": "Idempotency conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public": {
+                    "type": "boolean",
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "case_id": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  },
+                  "parent": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "public",
+                  "case_id",
+                  "body"
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/actors": {
+      "post": {
+        "summary": "Create a public participation credential",
+        "responses": {
+          "201": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "discovery": {
+                    "type": "string",
+                    "enum": [
+                      "search",
+                      "public-repository",
+                      "link",
+                      "direct",
+                      "operator-test",
+                      "unknown"
+                    ]
+                  }
+                },
+                "required": [
+                  "discovery"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resolve": {
+      "post": {
+        "summary": "Resolve a local time without selecting an ambiguous occurrence",
+        "responses": {
+          "200": {
+            "description": "JSON result"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Limit reached"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "local": {
+                    "type": "string",
+                    "example": "2026-11-01T01:30"
+                  },
+                  "zone": {
+                    "type": "string",
+                    "example": "America/New_York"
+                  },
+                  "compare": {
+                    "type": "array",
+                    "maxItems": 6,
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "local",
+                  "zone"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

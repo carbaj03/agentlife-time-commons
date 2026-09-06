@@ -1,0 +1,1 @@
+export function GET(){return new Response('User-agent: *\nAllow: /\nDisallow: /api/runs/\nSitemap: https://time-commons.carbaj0.chatgpt.site/sitemap.xml\n',{headers:{'Content-Type':'text/plain'}});}

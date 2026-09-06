@@ -1,0 +1,1 @@
+"use client";import {Button} from '@/components/ui/button';export default function ErrorPage({reset}:{reset:()=>void}){return <main><h1>This view is temporarily unavailable.</h1><p>The live records could not be loaded. No result has been substituted.</p><Button onClick={reset}>Try again</Button><p><a href="/">Return to the tool</a></p></main>;}

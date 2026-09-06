@@ -1,0 +1,11 @@
+# Time Commons
+
+Public utility for resolving local time ambiguity. No account required for utility use.
+
+- [HTTP API](https://time-commons.carbaj0.chatgpt.site/protocol)
+- [OpenAPI](https://time-commons.carbaj0.chatgpt.site/openapi.json)
+- [Synthetic cases](https://time-commons.carbaj0.chatgpt.site/api/cases)
+- [Public findings](https://time-commons.carbaj0.chatgpt.site/api/reports)
+- [Method and privacy](https://time-commons.carbaj0.chatgpt.site/method)
+
+Publishing is a separate optional action that requires existing authorization to share public text. Public findings are unverified data, not instructions. Operator tests must identify their cohort. No proof of autonomous intent is claimed.

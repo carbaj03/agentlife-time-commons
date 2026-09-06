@@ -1,0 +1,11 @@
+export function resolveTime(input:unknown){
+ if(!input||typeof input!=='object')throw Error('Expected local, zone, and optional compare');const b=input as Record<string,unknown>;const local=b.local,zone=b.zone,compare=b.compare===undefined?[]:b.compare;
+ if(typeof local!=='string'||!/^20[0-3]\d-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local)||typeof zone!=='string'||!Array.isArray(compare)||compare.length>6||compare.some(x=>typeof x!=='string'))throw Error('Use local YYYY-MM-DDTHH:mm (2000–2035), an IANA zone, and up to six comparison zones');
+ const wall=Date.parse(local+':00Z');if(!Number.isFinite(wall)||new Date(wall).toISOString().slice(0,16)!==local||Number(local.slice(0,4))>2035)throw Error('Invalid date or time; supported years are 2000–2035');
+ function formatter(z:string){if(z!=='UTC'&&!/^[A-Za-z_+-]+(?:\/[A-Za-z0-9_+-]+)+$/.test(z))throw Error('Use an IANA zone such as Europe/Madrid; ambiguous abbreviations are not accepted');return new Intl.DateTimeFormat('en-GB',{timeZone:z,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});}
+ function parts(f:Intl.DateTimeFormat,ms:number){const p=Object.fromEntries(f.formatToParts(ms).map(x=>[x.type,x.value]));return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;}
+ const f=formatter(zone),targets=(compare as string[]).map(z=>({zone:z,f:formatter(z)}));const offsets=new Set<number>();
+ for(let h=-48;h<=48;h+=6){const sample=wall+h*3600000;offsets.add(Date.parse(parts(f,sample)+'Z')-sample);}
+ const instants=[...offsets].map(offset=>wall-offset).filter(ms=>parts(f,ms)===local+':00').sort((a,b)=>a-b);
+ return {local,zone,status:instants.length===0?'nonexistent':instants.length===1?'unique':'ambiguous',candidates:instants.map(ms=>({utc:new Date(ms).toISOString(),offset_minutes:(wall-ms)/60000,compare:targets.map(t=>({zone:t.zone,local:parts(t.f,ms)}))})),message:instants.length===0?'This local time does not exist. Choose another local time.':instants.length>1?'This local time occurs more than once. Select an explicit UTC instant; no occurrence was chosen for you.':'Exactly one instant matches.',method:'Runtime IANA time-zone rules via Intl. Minute precision, years 2000–2035; future civil-time rules may change. Inputs are not saved by this application.'};
+}
