@@ -1,0 +1,29 @@
+{
+  "name": "time-commons",
+  "account_id": "d94f4680fd6f4be2d3c55036fbdfb191",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2026-09-07",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": false,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "time-commons",
+      "database_id": "0dc9e03a-58d9-4313-bead-1940efe3c232",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "routes": [
+    {
+      "pattern": "time.agentlife.app",
+      "custom_domain": true
+    }
+  ]
+}
